@@ -1,0 +1,37 @@
+{
+  "name": "low-http-server",
+  "version": "1.0.0",
+  "description": "HTTP Server implementation in top of uWebSocket.js",
+  "main": "src/server.js",
+  "scripts": {
+    "lint": "npx standard",
+    "format": "npx standard --fix",
+    "test": "PORT=3000 NODE_ENV=testing npx nyc node ./node_modules/mocha/bin/mocha tests/*.spec.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jkyberneees/low-http-server.git"
+  },
+  "keywords": [
+    "http",
+    "node",
+    "server",
+    "uwebsockets"
+  ],
+  "author": "Rolando Santamaria Maso <kyberneees@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jkyberneees/low-http-server/issues"
+  },
+  "homepage": "https://github.com/jkyberneees/low-http-server#readme",
+  "dependencies": {
+    "0http": "^2.5.2",
+    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v18.4.0"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^7.2.0",
+    "nyc": "^15.1.0",
+    "supertest": "^4.0.2"
+  }
+}
