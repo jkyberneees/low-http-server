@@ -2,6 +2,7 @@
 const expect = require('chai').expect
 const request = require('supertest')
 const { createReadStream } = require('fs')
+var jsonParser = require('body-parser').json
 
 describe('0http Web Framework - Low HTTP Server Integration', () => {
   const baseUrl = 'http://localhost:' + process.env.PORT
@@ -29,8 +30,16 @@ describe('0http Web Framework - Low HTTP Server Integration', () => {
       next()
     })
 
+    router.post('/echo2', (req, res) => {
+      let stringified = JSON.stringify(req.body)
+      res.end(stringified)
+    })
+
+    router.use(jsonParser())
+
     router.post('/echo', (req, res) => {
-      res.end(req.body)
+      let stringified = JSON.stringify(req.body)
+      res.end(stringified)
     })
 
     router.get('/qs', (req, res) => {
@@ -120,6 +129,16 @@ describe('0http Web Framework - Low HTTP Server Integration', () => {
       .expect(200)
       .then((response) => {
         expect(response.text).to.equal(JSON.stringify({ name: 'john' }))
+      })
+  })
+
+  it('should NOT parse request data on POST /echo2', async () => {
+    await request(baseUrl)
+      .post('/echo2')
+      .send({ name: 'john' })
+      .expect(200)
+      .then((response) => {
+        expect(response.text).to.equal(JSON.stringify({}))
       })
   })
 

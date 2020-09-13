@@ -1,5 +1,5 @@
 const uWS = require('uWebSockets.js')
-const { Writable } = require('stream')
+const { Writable, Readable } = require('stream')
 const { toString, toLowerCase } = require('./utils/string')
 const { forEach } = require('./utils/object')
 const REQUEST_EVENT = 'request'
@@ -21,30 +21,29 @@ module.exports = (config = {}) => {
     const reqWrapper = new HttpRequest(req)
     const resWrapper = new HttpResponse(res, uServer)
 
-    const method = reqWrapper.method
-    if (method !== 'HEAD') {
-      let buffer
+    reqWrapper.socket = {
+      destroy: function() {
+        return resWrapper.res.end()
+      }
+    } // needed for some middleware not to panic
 
-      res.onData((bytes, isLast) => {
-        const chunk = Buffer.from(bytes)
-        if (isLast) {
-          if (!buffer) {
-            buffer = chunk
+    const method = reqWrapper.method
+    if (method !== 'HEAD') { // 0http's low checks also that method !== 'GET', but many users would send request body with GET, unfortunately
+        res.onData((bytes, isLast) => {
+          const chunk = Buffer.from(bytes)
+          if (isLast) {
+            reqWrapper.push(chunk)
+            reqWrapper.push(null)
+            if (!res.finished) {
+              return handler(reqWrapper, resWrapper)
+            }
+            return
           }
-          reqWrapper.body = buffer
-          if (!res.finished) {
-            handler(reqWrapper, resWrapper)
-          }
-        } else {
-          if (buffer) {
-            buffer = Buffer.concat([buffer, chunk])
-          } else {
-            buffer = chunk
-          }
-        }
-      })
+
+          return reqWrapper.push(chunk)
+        })
     } else if (!res.finished) {
-      handler(reqWrapper, resWrapper)
+        handler(reqWrapper, resWrapper)
     }
   })
 
@@ -74,15 +73,17 @@ module.exports = (config = {}) => {
   return facade
 }
 
-class HttpRequest {
+class HttpRequest extends Readable {
   constructor (uRequest) {
+    super()
+    
     const q = uRequest.getQuery()
     this.req = uRequest
     this.url = uRequest.getUrl() + (q ? '?' + q : '')
     this.method = uRequest.getMethod().toUpperCase()
     this.statusCode = null
     this.statusMessage = null
-    this.body = null
+    this.body = {}
     this.headers = {}
 
     uRequest.forEach((header, value) => {
@@ -101,6 +102,11 @@ class HttpRequest {
   getRaw () {
     return this.req
   }
+
+  _read (size) {
+    return this.slice(0, size)
+  }
+
 }
 
 function writeAllHeaders () {
