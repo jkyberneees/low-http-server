@@ -1,4 +1,6 @@
 # low-http-server
+[![Build Status](https://travis-ci.org/jkyberneees/low-http-server.svg?branch=master)](https://travis-ci.org/jkyberneees/low-http-server)
+[![NPM version](https://img.shields.io/npm/v/low-http-server.svg?style=flat)](https://www.npmjs.com/package/low-http-server)  
 HTTP server implementation for Node.js based on [uWebSockets.js](https://github.com/uNetworking/uWebSockets.js)!
 > Formerly part of the [0http](https://github.com/jkyberneees/0http) project!
 
