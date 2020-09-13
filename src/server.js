@@ -22,7 +22,7 @@ module.exports = (config = {}) => {
     const resWrapper = new HttpResponse(res, uServer)
 
     const method = reqWrapper.method
-    if (method !== 'GET' && method !== 'HEAD') {
+    if (method !== 'HEAD') {
       let buffer
 
       res.onData((bytes, isLast) => {
