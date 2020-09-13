@@ -1,6 +1,6 @@
 {
   "name": "low-http-server",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "HTTP Server implementation in top of uWebSocket.js",
   "main": "src/server.js",
   "scripts": {
