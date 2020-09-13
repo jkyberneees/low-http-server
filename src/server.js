@@ -126,12 +126,8 @@ class HttpResponse extends Writable {
     this.__headers = {}
     this.headersSent = false
 
-    this.res.onAborted(() => {
-      this.__isAborted = true
-    })
-
     this.on('pipe', _ => {
-      if (this.__isAborted) return
+      if (this.finished) return
 
       this.__isWritable = true
       writeAllHeaders.call(this)
@@ -163,13 +159,13 @@ class HttpResponse extends Writable {
   }
 
   write (data) {
-    if (this.__isAborted) return
+    if (this.finished) return
 
     this.res.write(data)
   }
 
   writeHead (statusCode) {
-    if (this.__isAborted) return
+    if (this.finished) return
 
     this.statusCode = statusCode
     let headers
@@ -187,7 +183,7 @@ class HttpResponse extends Writable {
   }
 
   end (data = '') {
-    if (this.__isAborted) return
+    if (this.finished) return
 
     this.res.writeStatus(`${this.statusCode} ${this.statusMessage}`)
 
