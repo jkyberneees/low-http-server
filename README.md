@@ -27,10 +27,12 @@ server.listen(3000, () => {
 ```bash
 wrk -t8 -c40 -d5s http://127.0.0.1:3000
 ```
-- [low-http-server cluster](demos/cluster.js): **108125.84 reqs/s**
+
 - [low-http-server](demos/basic.js): **106630.22 reqs/s**
 - [node http cluster](demos/cluster-node-http.js): 87729.42 reqs/s
 - [node http](demos/basic-node-http.js): 65807.49 reqs/s
+
+Take note that low-http-server does not clusterize on anything [besides reasonably recent versions of Linux kernel](https://github.com/uNetworking/uWebSockets.js/issues/214#issuecomment-547589050).
 
 ## Known limitations
 - Limited compatibility with Node.js standard interface. 
