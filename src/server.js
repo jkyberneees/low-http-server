@@ -2,6 +2,7 @@ const uWS = require('uWebSockets.js')
 const { Writable, Readable } = require('stream')
 const { toString, toLowerCase } = require('./utils/string')
 const { forEach } = require('./utils/object')
+require('./utils/os-compat-check')
 const REQUEST_EVENT = 'request'
 
 module.exports = (config = {}) => {
