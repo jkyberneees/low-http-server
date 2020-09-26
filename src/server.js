@@ -6,6 +6,12 @@ require('./utils/os-compat-check')
 const REQUEST_EVENT = 'request'
 
 module.exports = (config = {}) => {
+  let appType = 'App'
+
+  if (config.cert_file_name && config.key_file_name) {
+    appType = 'SSLApp'
+  }
+
   let handler = (req, res) => {
     res.statusCode = 404
     res.statusMessage = 'Not Found'
@@ -13,7 +19,7 @@ module.exports = (config = {}) => {
     res.end()
   }
 
-  const uServer = uWS.App(config).any('/*', (res, req) => {
+  const uServer = uWS[appType](config).any('/*', (res, req) => {
     res.finished = false
     res.onAborted(() => {
       res.finished = true
@@ -70,6 +76,8 @@ module.exports = (config = {}) => {
       cb(socket)
     })
   }
+
+  facade.uwsApp = uServer
 
   return facade
 }
