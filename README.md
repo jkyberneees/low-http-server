@@ -21,10 +21,9 @@ server.listen(3000, () => {
 ```
 
 Or with SSL:
-
 ```javascript
 const server = require('low-http-server')({
-	cert_file_name: './demos/test.crt',
+  cert_file_name: './demos/test.crt',
   key_file_name: './demos/test.key',
   passphrase: 'test'
 })
@@ -36,10 +35,7 @@ server.on('request', (req, res) => {
 server.listen(3000, () => {
   console.log('Server listening on http://0.0.0.0:3000')
 })
-
 ```
-
-
 
 ## Benchmarks
 
