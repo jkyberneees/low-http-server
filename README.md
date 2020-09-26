@@ -20,7 +20,29 @@ server.listen(3000, () => {
 
 ```
 
+Or with SSL:
+
+```javascript
+const server = require('low-http-server')({
+		cert_file_name: './demos/test.crt',
+    key_file_name: './demos/test.key',
+    passphrase: 'test'
+})
+
+server.on('request', (req, res) => {
+  res.end('Hello World!')
+})
+
+server.listen(3000, () => {
+  console.log('Server listening on http://0.0.0.0:3000')
+})
+
+```
+
+
+
 ## Benchmarks
+
 > Machine: MacBook Pro (13-inch, 2020), 1,4 GHz Quad-Core Intel Core i5  
 > Node.js version: 12.18.3
 
