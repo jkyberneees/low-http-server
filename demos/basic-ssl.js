@@ -2,7 +2,8 @@ const cero = require('../src/server')
 
 const server = cero({
   cert_file_name: './demos/test.crt',
-  key_file_name: './demos/test.key'
+  key_file_name: './demos/test.key',
+  passphrase: 'test'
 })
 server.on('request', (req, res) => {
   res.end('Hello World!')
