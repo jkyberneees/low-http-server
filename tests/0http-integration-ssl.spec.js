@@ -4,17 +4,17 @@ const request = require('supertest')
 const { createReadStream } = require('fs')
 const jsonParser = require('body-parser').json
 
-process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0; // needed to trust self-signed. Quick & dirty fix
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0 // needed to trust self-signed. Quick & dirty fix
 
 describe('0http Web Framework - Low HTTP Server Integration with SSL', () => {
   const baseUrl = 'https://localhost:' + process.env.PORT
 
   const { router, server } = require('0http')({
     server: require('../src/server')({
-		cert_file_name: './demos/test.crt',
-		key_file_name: './demos/test.key',
-		passphrase: 'test'
-	})
+      cert_file_name: './demos/test.crt',
+      key_file_name: './demos/test.key',
+      passphrase: 'test'
+    })
   })
 
   it('should successfully register service routes', (done) => {

@@ -6,13 +6,11 @@ require('./utils/os-compat-check')
 const REQUEST_EVENT = 'request'
 
 module.exports = (config = {}) => {
-
   let appType = 'App'
 
   if (config.cert_file_name && config.key_file_name) {
     appType = 'SSLApp'
   }
-  
 
   let handler = (req, res) => {
     res.statusCode = 404
