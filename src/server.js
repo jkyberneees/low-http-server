@@ -23,28 +23,28 @@ module.exports = (config = {}) => {
     const resWrapper = new HttpResponse(res, uServer)
 
     reqWrapper.socket = {
-      destroy: function() {
+      destroy: function () {
         return resWrapper.res.end()
       }
     } // needed for some middleware not to panic
 
     const method = reqWrapper.method
     if (method !== 'HEAD') { // 0http's low checks also that method !== 'GET', but many users would send request body with GET, unfortunately
-        res.onData((bytes, isLast) => {
-          const chunk = Buffer.from(bytes)
-          if (isLast) {
-            reqWrapper.push(chunk)
-            reqWrapper.push(null)
-            if (!res.finished) {
-              return handler(reqWrapper, resWrapper)
-            }
-            return
+      res.onData((bytes, isLast) => {
+        const chunk = Buffer.from(bytes)
+        if (isLast) {
+          reqWrapper.push(chunk)
+          reqWrapper.push(null)
+          if (!res.finished) {
+            return handler(reqWrapper, resWrapper)
           }
+          return
+        }
 
-          return reqWrapper.push(chunk)
-        })
+        return reqWrapper.push(chunk)
+      })
     } else if (!res.finished) {
-        handler(reqWrapper, resWrapper)
+      handler(reqWrapper, resWrapper)
     }
   })
 
@@ -77,7 +77,7 @@ module.exports = (config = {}) => {
 class HttpRequest extends Readable {
   constructor (uRequest) {
     super()
-    
+
     const q = uRequest.getQuery()
     this.req = uRequest
     this.url = uRequest.getUrl() + (q ? '?' + q : '')
@@ -107,7 +107,6 @@ class HttpRequest extends Readable {
   _read (size) {
     return this.slice(0, size)
   }
-
 }
 
 function writeAllHeaders () {

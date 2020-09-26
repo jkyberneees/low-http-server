@@ -1,3 +1,5 @@
+/* eslint no-new: 0 */
+
 const cero = require('../src/server')
 const { Worker, isMainThread, threadId } = require('worker_threads')
 const numCPUs = require('os').cpus().length
