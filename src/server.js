@@ -61,16 +61,18 @@ module.exports = (config = {}) => {
       handler = cb
     },
 
-    close () {
+    close (cb) {
       clearInterval(timer)
       uWS.us_listen_socket_close(uServer._socket)
+      if (!cb) return
+      return cb()
     }
   }
   facade.listen = facade.start = (port, cb) => {
     uServer.listen(port, socket => {
       uServer._socket = socket
 
-      cb(socket)
+      if (cb) cb(socket)
     })
   }
 
