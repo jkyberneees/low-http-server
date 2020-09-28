@@ -152,7 +152,10 @@ class HttpResponse extends Writable {
   }
 
   setHeader (name, value) {
-    this.__headers[toLowerCase(name)] = [name, toString(value)]
+    let filterRegEx = new RegExp(`^${name},`)
+    let toSet = toString(value)
+    toSet = toSet.replace(filterRegEx, '')
+    this.__headers[toLowerCase(name)] = [name, toSet]
   }
 
   getHeaderNames () {
