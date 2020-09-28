@@ -21,9 +21,6 @@ module.exports = (config = {}) => {
 
   const uServer = uWS[appType](config).any('/*', (res, req) => {
     res.finished = false
-    res.onAborted(() => {
-      res.finished = true
-    })
 
     const reqWrapper = new HttpRequest(req)
     const resWrapper = new HttpResponse(res, uServer)
@@ -139,6 +136,10 @@ class HttpResponse extends Writable {
 
     this.__headers = {}
     this.headersSent = false
+
+    this.res.onAborted(() => {
+      this.finished = this.res.finished = true
+    })
 
     this.on('pipe', _ => {
       if (this.finished) return
