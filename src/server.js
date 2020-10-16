@@ -21,9 +21,6 @@ module.exports = (config = {}) => {
 
   const uServer = uWS[appType](config).any('/*', (res, req) => {
     res.finished = false
-    res.onAborted(() => {
-      res.finished = true
-    })
 
     const reqWrapper = new HttpRequest(req)
     const resWrapper = new HttpResponse(res, uServer)
@@ -64,16 +61,18 @@ module.exports = (config = {}) => {
       handler = cb
     },
 
-    close () {
+    close (cb) {
       clearInterval(timer)
       uWS.us_listen_socket_close(uServer._socket)
+      if (!cb) return
+      return cb()
     }
   }
   facade.listen = facade.start = (port, cb) => {
     uServer.listen(port, socket => {
       uServer._socket = socket
 
-      cb(socket)
+      if (cb) cb(socket)
     })
   }
 
@@ -140,6 +139,10 @@ class HttpResponse extends Writable {
     this.__headers = {}
     this.headersSent = false
 
+    this.res.onAborted(() => {
+      this.finished = this.res.finished = true
+    })
+
     this.on('pipe', _ => {
       if (this.finished) return
 
@@ -149,7 +152,10 @@ class HttpResponse extends Writable {
   }
 
   setHeader (name, value) {
-    this.__headers[toLowerCase(name)] = [name, toString(value)]
+    const filterRegEx = new RegExp(`^${name},`)
+    let toSet = toString(value)
+    toSet = toSet.replace(filterRegEx, '')
+    this.__headers[toLowerCase(name)] = [name, toSet]
   }
 
   getHeaderNames () {
