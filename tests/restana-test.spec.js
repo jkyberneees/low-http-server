@@ -7,11 +7,11 @@ const path = require('path')
 const stream = require('stream')
 
 describe('All Responses', () => {
-	const baseUrl = 'http://localhost:' + process.env.PORT
-  let server = require('../src/server')()
+  const baseUrl = 'http://localhost:' + process.env.PORT
+  const server = require('../src/server')()
   const service = require('restana')({
-	server: server,
-	prioRequestsProcessing: false
+    server: server,
+    prioRequestsProcessing: false
   })
 
   service.get('/string', (req, res) => {
@@ -93,11 +93,10 @@ describe('All Responses', () => {
 
   it('should start service', async (done) => {
     server.start(~~process.env.PORT, serverSocket => {
-		if (serverSocket) {
-		  done()
-		}
-	})
-	
+      if (serverSocket) {
+        done()
+      }
+    })
   })
 
   it('should GET 200 and string content on /string', async () => {
@@ -161,8 +160,7 @@ describe('All Responses', () => {
       .get('/stream')
       .expect(200)
       .expect('content-type', 'text/html; charset=utf-8')
-	  .expect(readFileSync(path.resolve(__dirname, './fixtures/.name'), 'utf8'))
-	  
+      .expect(readFileSync(path.resolve(__dirname, './fixtures/.name'), 'utf8'))
   })
 
   it('should GET 200 and buffer content on /stream-octet', async () => {
@@ -196,7 +194,6 @@ describe('All Responses', () => {
       .expect({ code: 503, message: 'Rejected' })
       .expect('content-type', 'application/json; charset=utf-8')
   })
-
 
   it('should GET 500 and buffer content on /invalid-body', async () => {
     await request(baseUrl)
