@@ -203,6 +203,16 @@ class HttpResponse extends Writable {
   }
 
   end (data = '') {
+    if (typeof data !== 'string' && !Buffer.isBuffer(data) && !ArrayBuffer.isView(data)) {
+      if (process.env.NODE_ENV !== 'production') {
+        data = 'Body has to be RecognizedString. Please see: https://unetworking.github.io/uWebSockets.js/generated/index.html#recognizedstring'
+      } else {
+        data = ''
+      }
+      this.statusCode = 500
+      this.statusMessage = 'Internal Server Error'
+    }
+
     if (this.finished) return
 
     this.res.writeStatus(`${this.statusCode} ${this.statusMessage}`)
