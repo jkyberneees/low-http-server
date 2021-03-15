@@ -152,7 +152,7 @@ class HttpResponse extends Writable {
   }
 
   setHeader (name, value) {
-    const filterRegEx = new RegExp(`^${name},`, "i")
+    const filterRegEx = new RegExp(`^${name},`, 'i')
     let toSet = toString(value)
     toSet = toSet.replace(filterRegEx, '')
     this.__headers[toLowerCase(name)] = [name, toSet]
