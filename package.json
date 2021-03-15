@@ -34,10 +34,11 @@
   ],
   "devDependencies": {
     "0http": "^3.0.0",
+    "body-parser": "^1.19.0",
     "chai": "^4.2.0",
     "mocha": "^7.2.0",
     "nyc": "^15.1.0",
-    "supertest": "^4.0.2",
-    "body-parser": "^1.19.0"
+    "restana": "^4.8.1",
+    "supertest": "^4.0.2"
   }
 }
