@@ -152,7 +152,7 @@ class HttpResponse extends Writable {
   }
 
   setHeader (name, value) {
-    const filterRegEx = new RegExp(`^${name},`)
+    const filterRegEx = new RegExp(`^${name},`, 'i')
     let toSet = toString(value)
     toSet = toSet.replace(filterRegEx, '')
     this.__headers[toLowerCase(name)] = [name, toSet]
@@ -204,6 +204,17 @@ class HttpResponse extends Writable {
 
   end (data = '') {
     if (this.finished) return
+
+    if (typeof data !== 'string' && !Buffer.isBuffer(data) && !ArrayBuffer.isView(data)) {
+      // this is needed to check that we only send strings, buffers or Typed Arrays into uWebSockets.js. Otherwise, the HTTP request will just hang.
+      if (process.env.NODE_ENV !== 'production') {
+        data = 'Body has to be RecognizedString. Please see: https://unetworking.github.io/uWebSockets.js/generated/index.html#recognizedstring'
+      } else {
+        data = ''
+      }
+      this.statusCode = 500
+      this.statusMessage = 'Internal Server Error'
+    }
 
     this.res.writeStatus(`${this.statusCode} ${this.statusMessage}`)
 
