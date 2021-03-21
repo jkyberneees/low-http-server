@@ -2,6 +2,7 @@ const uWS = require('uWebSockets.js')
 const { Writable, Readable } = require('stream')
 const { toString, toLowerCase } = require('./utils/string')
 const { forEach } = require('./utils/object')
+const EventEmitter = require('events')
 require('./utils/os-compat-check')
 const REQUEST_EVENT = 'request'
 
@@ -54,29 +55,66 @@ module.exports = (config = {}) => {
   uServer._date = new Date().toUTCString()
   const timer = setInterval(() => (uServer._date = new Date().toUTCString()), 1000)
 
-  const facade = {
-    on (event, cb) {
-      if (event !== REQUEST_EVENT) throw new Error(`Given "${event}" event is not supported!`)
 
-      handler = cb
-    },
+  class Facade extends EventEmitter {
+    constructor() {
+      super()
 
+      const oldThisOn = this.on.bind(this)
+      const oldThisOnce = this.once.bind(this)
+
+      this.once = function (eventName, listener) {
+        return oldThisOnce(eventName, listener)    
+      }
+
+      this.on = function (eventName, listener) {
+        if (eventName === REQUEST_EVENT) {
+          handler = listener
+          return
+        }
+        return oldThisOn(eventName, listener)    
+      }
+    }
     close (cb) {
       clearInterval(timer)
       uWS.us_listen_socket_close(uServer._socket)
       if (!cb) return
       return cb()
     }
+    start (port, cb) {
+      uServer.listen(port, socket => {
+        uServer._socket = socket
+  
+        if (cb) cb(socket)
+      })
+    }
+    listen (port, cb) {
+      if (typeof port === 'object') {
+        const listenOptions = port;
+        port = listenOptions.port
+        cb = listenOptions.cb
+        const host = listenOptions.host
+        uServer.listen(host, port, socket => {
+          uServer._socket = socket
+    
+          if (cb) cb(socket)
+        })
+      }
+      else {
+        return this.start(port, cb)
+      }
+      
+    }
+    get uwsApp() {
+      return uServer
+    }
+    
   }
-  facade.listen = facade.start = (port, cb) => {
-    uServer.listen(port, socket => {
-      uServer._socket = socket
 
-      if (cb) cb(socket)
-    })
-  }
+  const facade = new Facade()
 
-  facade.uwsApp = uServer
+  facade[Symbol('IncomingMessage')] = HttpRequest
+  facade[Symbol('ServerResponse')] = HttpResponse
 
   return facade
 }
