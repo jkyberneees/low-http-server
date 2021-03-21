@@ -158,7 +158,7 @@ function writeAllHeaders () {
   this.res.writeHeader('Date', this.server._date)
 
   forEach(this.__headers, ([name, value]) => {
-    this.res.writeHeader(name, value)
+    if (name.toLowerCase() !== 'content-length') this.res.writeHeader(name, value) // 'if' isneeded to solve some issues with Content-Length being written twice by some frameworks
   })
 
   this.headersSent = true
