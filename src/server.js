@@ -212,6 +212,10 @@ class HttpResponse extends Writable {
     return this.__headers[toLowerCase(name)]
   }
 
+  hasHeader(name) {
+    return this.__headers[toLowerCase(name)] ? true : false
+  }
+
   removeHeader (name) {
     delete this.__headers[toLowerCase(name)]
   }
