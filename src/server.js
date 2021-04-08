@@ -27,6 +27,9 @@ module.exports = (config = {}) => {
     const reqWrapper = new HttpRequest(req)
     const resWrapper = new HttpResponse(res, uServer)
 
+    reqWrapper.res = resWrapper;
+    resWrapper.req = reqWrapper;
+
     reqWrapper.socket = {
       destroy: function () {
         return resWrapper.res.end()
