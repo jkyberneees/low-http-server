@@ -102,7 +102,7 @@ module.exports = (config = {}) => {
 
         if (cb) cb(socket)
       }
-      if (host, port, cb) {
+      if (host && port && cb) {
         args = [host, port, callbackFunction]
       }
       if (!cb && (!port || typeof port === 'function')) {
