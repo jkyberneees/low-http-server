@@ -19,6 +19,13 @@
     "uwebsockets"
   ],
   "author": "Rolando Santamaria Maso <kyberneees@gmail.com>",
+  "contributors": [
+    {
+      "name": "Nicholas Schamberg",
+      "email": "schamberg.nicholas@gmail.com",
+      "author": true
+    }
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/jkyberneees/low-http-server/issues"
