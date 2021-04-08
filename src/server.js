@@ -5,6 +5,7 @@ const { forEach } = require('./utils/object')
 const EventEmitter = require('events')
 require('./utils/os-compat-check')
 const REQUEST_EVENT = 'request'
+const ArrayBufferDecoder = new TextDecoder("utf-8");
 
 module.exports = (config = {}) => {
   let appType = 'App'
@@ -29,6 +30,15 @@ module.exports = (config = {}) => {
     reqWrapper.socket = {
       destroy: function () {
         return resWrapper.res.end()
+      },
+      get remoteAddress() { 
+        /* 
+          required by fastify and other frameworks to get client IP. 
+          Returns either IPv4 or IPv6
+        */
+        let remote = resWrapper.res.getRemoteAddressAsText()
+        remote = ArrayBufferDecoder.decode(remote)
+        return remote
       }
     } // needed for some middleware not to panic
 
