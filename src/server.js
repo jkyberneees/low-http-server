@@ -91,27 +91,42 @@ module.exports = (config = {}) => {
       if (!cb) return
       return cb()
     }
-    start (port, cb) {
-      uServer.listen(port, socket => {
+    start (host, port, cb) {
+      let args
+      const callbackFunction = function(socket) {
         uServer._socket = socket
   
         if (cb) cb(socket)
-      })
+      }
+      if (host, port, cb) {
+        args = [host,port,callbackFunction]
+      }
+      if (!cb && (!port || typeof port === 'function')) {
+        cb = port;
+        port = host;
+        args = [port,callbackFunction]
+      }
+      return uServer.listen(...args)
     }
-    listen (port, cb) {
-      if (typeof port === 'object') {
-        const listenOptions = port;
+    listen (host, port, cb) {
+      if (typeof host === 'object') {
+        const listenOptions = host;
         port = listenOptions.port
         cb = listenOptions.cb
-        const host = listenOptions.host
-        uServer.listen(host, port, socket => {
+        host = listenOptions.host
+        return this.start(host, port, socket => {
           uServer._socket = socket
     
           if (cb) cb(socket)
         })
       }
-      else {
+      if ((!port || typeof port === 'function') && !cb) {
+        cb = port;
+        port = host;
         return this.start(port, cb)
+      }
+      else {
+        return this.start(host, port, cb)
       }
       
     }
