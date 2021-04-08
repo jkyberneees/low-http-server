@@ -156,6 +156,7 @@ class HttpRequest extends Readable {
     this.statusMessage = null
     this.body = {}
     this.headers = {}
+    this.socket = {}
 
     uRequest.forEach((header, value) => {
       this.headers[header] = value
