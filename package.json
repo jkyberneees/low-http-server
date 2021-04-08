@@ -1,7 +1,7 @@
 {
   "name": "low-http-server",
   "version": "3.0.0",
-  "description": "HTTP Server implementation in top of uWebSocket.js",
+  "description": "HTTP Server implementation on top of uWebSocket.js",
   "main": "src/server.js",
   "scripts": {
     "lint": "npx standard",
