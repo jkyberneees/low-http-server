@@ -14,10 +14,9 @@ Current goals:
   * Make `low-http-server` compatible with Fastify (Done, but not thoroughly tested)
   * Make server facade inherit from `EventEmitter`, so that frameworks relying on events (such as Fastify) can use `low-http-server` as a backend (Done)
   * Implement more of Node.js HTTP API surface
+    * `net.socket.remoteAddress` (Done, via `HttpResponse.getRemoteAddressAsText()` from uWebSockets.js)
     * `http.ServerResponse.hasHeader` (Done)
-    * `http.ServerResponse.writableEnded` & `http.ServerResponse.writableFinished` (Very likely)
-    * `http.ServerResponse.req` (Dubious)
-    * `http.ServerResponse.sendDate` (Dubious)
+    * `http.ServerResponse.req` (Done)
     * `http.ServerResponse.setTimeout` (Maybe)
     * & others
 
@@ -68,7 +67,9 @@ wrk -t8 -c40 -d5s http://127.0.0.1:3000
 - [node http cluster](demos/cluster-node-http.js): 87729.42 reqs/s
 - [node http](demos/basic-node-http.js): 65807.49 reqs/s
 
-Take note that low-http-server does not clusterize on anything [besides reasonably recent versions of Linux kernel](https://github.com/uNetworking/uWebSockets.js/issues/214#issuecomment-547589050).
+Take note that low-http-server does not clusterize on anything [besides reasonably recent versions of Linux kernel](https://github.com/uNetworking/uWebSockets.js/issues/214#issuecomment-547589050). You may deploy several instances listening on different IPs and being proxied (e.g. by nginx) as a workaround. 
+
+Clusterization could be possibly implemented, as soon as uWebSockets.js gets support for listening to a socket.
 
 ## Known limitations
 - Limited compatibility with Node.js standard interface. 
@@ -76,7 +77,7 @@ Take note that low-http-server does not clusterize on anything [besides reasonab
 ## Integrations
 ### General notes
 
-Low-http-server has become more compatible with Node.js standard interface, but it is not perfect. Despite certain quirks, low-http-server can often replace the usual node `http` module backend and serve as an underlying server for popular node.js frameworks. There are only three known requirements: 
+Low-http-server has become more compatible with Node.js standard interface, but it is not perfect. Despite certain quirks, low-http-server can often replace the usual node `http` module backend and serve as an underlying server for popular node.js frameworks. There are only two known requirements: 
 
 * The framework doesn't rely on deprecated `Object.setPrototypeOf` to add new properties to the `request` and `response` objects. This is because our `request` and `response` provide similar APIs, but are inherently different in their internals. They cannot be replaced with an essentialy incompatible foreign Prototype. This means that Express is currently incompatible (see [Express `init` middleware](https://github.com/expressjs/express/blob/508936853a6e311099c9985d4c11a4b1b8f6af07/lib/middleware/init.js#L35)).
 * The HTTP handler function is **NOT** prioritized using `setImmediate` . Otherwise, low-http-server will work, but perforfmance will suffer tremendously. For example, in Restana you are going to need `prioRequestsProcessing` framework option set to `false`
@@ -127,7 +128,7 @@ service.get('/', (req,res) => {
 
 ### Fastify
 
-**NOTE:** Not tested enough
+Generally, appears to have good support, but there may be some small quirks. Test well before putting into production.
 
 ```js
 const server = require('./src/server.js')({})
