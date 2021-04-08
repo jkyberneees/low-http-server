@@ -1,4 +1,5 @@
 const { Readable } = require('stream')
+const { forEach } = require('./utils/object')
 
 class HttpRequest extends Readable {
   constructor (uRequest) {
