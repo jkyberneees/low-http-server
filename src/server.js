@@ -270,9 +270,24 @@ class HttpResponse extends Writable {
     })
   }
 
-  end (data = '') {
+  end (data) {
     if (this.finished) return
 
+    function doWrite(res) {
+      res.res.writeStatus(`${res.statusCode} ${res.statusMessage}`)
+
+      if (!res.__isWritable) {
+       writeAllHeaders.call(res)
+      }
+
+      res.finished = true
+      res.res.end(data)
+    }
+
+    if (!data) {
+      data = ''
+      return doWrite(this)
+    }
     if (typeof data !== 'string' && !Buffer.isBuffer(data) && !ArrayBuffer.isView(data)) {
       // this is needed to check that we only send strings, buffers or Typed Arrays into uWebSockets.js. Otherwise, the HTTP request will just hang.
       if (process.env.NODE_ENV !== 'production') {
@@ -282,16 +297,10 @@ class HttpResponse extends Writable {
       }
       this.statusCode = 500
       this.statusMessage = 'Internal Server Error'
+      return doWrite(this)
     }
-
-    this.res.writeStatus(`${this.statusCode} ${this.statusMessage}`)
-
-    if (!this.__isWritable) {
-      writeAllHeaders.call(this)
-    }
-
-    this.finished = true
-    this.res.end(data)
+    return doWrite(this)
+    
   }
 
   getRaw () {
