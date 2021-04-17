@@ -19,6 +19,6 @@ app.get('/hi', (req, reply) => {
   return reply.send('hi')
 })
 
- app.listen(3000, '0.0.0.0', (sock) => {
-	if (sock) console.log('listening')
- })
+app.listen(3000, '0.0.0.0', (sock) => {
+  if (sock) console.log('listening')
+})
