@@ -4,26 +4,10 @@
 HTTP server implementation for Node.js based on [uWebSockets.js](https://github.com/uNetworking/uWebSockets.js)!
 > Formerly part of the [0http](https://github.com/jkyberneees/0http) project!
 
-## Branch notes
-
-This branch hosts the development of new features & capabilities that could become part of the next major version of `low-http-server`. While the builds in this branch are tested, they change rapidly, with internal structures subject to considerable reworking. This means that this branch is inherently unstable and should NOT be used in production. 
-
-Current goals:
-
-* Ensure more Node.js frameworks can work with `low-http-server`
-  * Make `low-http-server` compatible with Fastify (Done, but not thoroughly tested)
-  * Make server facade inherit from `EventEmitter`, so that frameworks relying on events (such as Fastify) can use `low-http-server` as a backend (Done)
-  * Implement more of Node.js HTTP API surface
-    * `net.socket.remoteAddress` (Done, via `HttpResponse.getRemoteAddressAsText()` from uWebSockets.js)
-    * `http.ServerResponse.hasHeader` (Done)
-    * `http.ServerResponse.req` (Done)
-    * `http.ServerResponse.setTimeout` (Maybe)
-    * & others
-
 ## Introduction
 
 `low-http-server` is a Node.js wrapper around the great [uWebSockets.js](https://github.com/uNetworking/uWebSockets.js) library. Here, I/O throughput is maximized at the cost of API compatibility, when we compare it to the standard Node.js HTTP server interface.
-> As far as for Node.js stands, `uWebSockets.js` brings the best I/O performance in terms of HTTP servers.
+> As far as Node.js stands, `uWebSockets.js` brings the best I/O performance in terms of HTTP servers.
 
 ```js
 const server = require('low-http-server')({})
@@ -107,6 +91,8 @@ server.listen(3000, (socket) => {
 
 ### restana framework
 
+No problems, if `prioRequestsProcessing` is set to false.
+
 ```js
 const server = require('low-http-server')({})
 
@@ -147,7 +133,7 @@ app.get('/', (req, reply) => {
 	reply.send('hello')
 })
 
-app.listen(3000, (sock) => { // Note: you cannot do server.listen, as Fastify apparently needs to modify things
+app.listen(3000, '0.0.0.0', (sock) => { // Note: you cannot do server.listen, as Fastify apparently needs to set some things
 	if (sock) console.log('listening')
 }) 
 ```
