@@ -1,12 +1,14 @@
 class HttpResponseSocket {
-  constructor(uResponse) {
-    this.uResponse = uResponse;
+  constructor (uResponse) {
+    this.uResponse = uResponse
   }
-  get remoteAddress() {
-    return Buffer.from(this.uResponse.getRemoteAddressAsText()).toString();
+
+  get remoteAddress () {
+    return Buffer.from(this.uResponse.getRemoteAddressAsText()).toString()
   }
-  destroy() {
-    return this.uResponse.end();
+
+  destroy () {
+    return this.uResponse.end()
   }
 }
 
