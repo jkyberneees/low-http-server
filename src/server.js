@@ -2,7 +2,6 @@ const uWS = require('uWebSockets.js')
 const EventEmitter = require('events')
 require('./utils/os-compat-check')
 const REQUEST_EVENT = 'request'
-const ArrayBufferDecoder = new TextDecoder('utf-8')
 
 const HttpRequest = require('./request')
 const HttpResponse = require('./response')
@@ -25,25 +24,12 @@ module.exports = (config = {}) => {
     res.finished = false
 
     const reqWrapper = new HttpRequest(req)
-    const resWrapper = new HttpResponse(res, uServer)
+    const resWrapper = new HttpResponse(res, uServer, config)
 
     reqWrapper.res = resWrapper
     resWrapper.req = reqWrapper
 
-    reqWrapper.socket = {
-      destroy: function () {
-        return resWrapper.res.end()
-      },
-      get remoteAddress () {
-        /*
-          required by fastify and other frameworks to get client IP.
-          Returns either IPv4 or IPv6
-        */
-        let remote = resWrapper.res.getRemoteAddressAsText()
-        remote = ArrayBufferDecoder.decode(remote)
-        return remote
-      }
-    } // needed for some middleware not to panic
+    reqWrapper.socket = resWrapper.socket
 
     const method = reqWrapper.method
     if (method !== 'HEAD') { // 0http's low checks also that method !== 'GET', but many users would send request body with GET, unfortunately

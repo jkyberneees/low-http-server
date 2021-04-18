@@ -1,6 +1,7 @@
 const { Writable } = require('stream')
 const { toString, toLowerCase } = require('./utils/string')
 const { forEach } = require('./utils/object')
+const HttpResponseSocket = require('./responseSocket')
 
 function writeAllHeaders (res) {
   res.res.writeHeader('Date', res.server._date)
@@ -24,6 +25,8 @@ class HttpResponse extends Writable {
 
     this.__headers = {}
     this.headersSent = false
+
+    this.socket = new HttpResponseSocket(uResponse)
 
     this.res.onAborted(() => {
       this.finished = this.res.finished = true
