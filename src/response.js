@@ -1,17 +1,6 @@
 const { Writable } = require('stream')
-const { toString, toLowerCase } = require('./utils/string')
-const { forEach } = require('./utils/object')
+const { toLowerCase } = require('./utils/string')
 const HttpResponseSocket = require('./responseSocket')
-
-function writeAllHeaders (res) {
-  res.res.writeHeader('Date', res.server._date)
-
-  forEach(res.__headers, ([name, value]) => {
-    if (name.toLowerCase() !== 'content-length') res.res.writeHeader(name, value) // 'if' is needed to solve some issues with Content-Length being written twice by some frameworks
-  })
-
-  res.headersSent = true
-}
 
 class HttpResponse extends Writable {
   constructor (uResponse, uServer) {
@@ -34,17 +23,25 @@ class HttpResponse extends Writable {
 
     this.on('pipe', (_) => {
       if (this.finished) return
-
-      this.__isWritable = true
-      writeAllHeaders(this)
+      this.writeAllHeaders()
     })
   }
 
+  writeAllHeaders () {
+    if (this.headersSent) return
+
+    this.res.writeHeader('Date', this.server._date)
+
+    Object.keys(this.__headers).forEach(key => {
+      if (key.toLowerCase() === 'content-length') return
+      return this.res.writeHeader(key, this.__headers[key])
+    })
+
+    this.headersSent = true
+  }
+
   setHeader (name, value) {
-    const filterRegEx = new RegExp(`^${name},`, 'i')
-    let toSet = toString(value)
-    toSet = toSet.replace(filterRegEx, '')
-    this.__headers[toLowerCase(name)] = [name, toSet]
+    this.__headers[toLowerCase(name)] = value
   }
 
   getHeaderNames () {
@@ -52,11 +49,8 @@ class HttpResponse extends Writable {
   }
 
   getHeaders () {
-    const headers = {}
-    forEach(this.__headers, ([, value], name) => {
-      headers[name] = value
-    })
-    return headers
+    // returns shallow copy
+    return Object.assign({}, this.__headers)
   }
 
   getHeader (name) {
@@ -90,8 +84,8 @@ class HttpResponse extends Writable {
     } else {
       headers = {}
     }
-    forEach(headers, (value, name) => {
-      this.setHeader(name, value)
+    Object.keys(headers).forEach(key => {
+      this.setHeader(key, headers[key])
     })
   }
 
@@ -101,9 +95,7 @@ class HttpResponse extends Writable {
     function doWrite (res) {
       res.res.writeStatus(`${res.statusCode} ${res.statusMessage}`)
 
-      if (!res.__isWritable) {
-        writeAllHeaders(res)
-      }
+      res.writeAllHeaders()
 
       res.finished = true
       res.res.end(data)
