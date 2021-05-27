@@ -34,6 +34,11 @@ module.exports = (config = {}) => {
     const method = reqWrapper.method
     if (method !== 'HEAD') { // 0http's low checks also that method !== 'GET', but many users would send request body with GET, unfortunately
       res.onData((bytes, isLast) => {
+        
+        if (!bytes.byteLength) {
+          if (!isLast) return
+          return handler(reqWrapper, resWrapper)
+        }
         const chunk = Buffer.from(bytes)
         if (isLast) {
           reqWrapper.push(chunk)
