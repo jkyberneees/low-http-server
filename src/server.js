@@ -33,7 +33,7 @@ module.exports = (config = {}) => {
 
     const method = reqWrapper.method
     if (method !== 'HEAD') { // 0http's low checks also that method !== 'GET', but many users would send request body with GET, unfortunately
-      let buffer;
+      let buffer
       res.onData((bytes, isLast) => {
         if (!bytes.byteLength) return handler(reqWrapper, resWrapper)
         let chunk = Buffer.from(bytes)
@@ -44,7 +44,6 @@ module.exports = (config = {}) => {
           if (!res.finished) {
             return handler(reqWrapper, resWrapper)
           }
-          return
         } else {
           if (buffer) buffer = Buffer.concat([buffer, chunk])
           else buffer = Buffer.concat([chunk])
