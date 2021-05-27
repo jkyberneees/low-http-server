@@ -33,18 +33,22 @@ module.exports = (config = {}) => {
 
     const method = reqWrapper.method
     if (method !== 'HEAD') { // 0http's low checks also that method !== 'GET', but many users would send request body with GET, unfortunately
+      let buffer;
       res.onData((bytes, isLast) => {
-        const chunk = Buffer.from(bytes)
+        if (!bytes.byteLength) return handler(reqWrapper, resWrapper)
+        let chunk = Buffer.from(bytes)
         if (isLast) {
+          if (buffer) chunk = Buffer.concat([buffer, chunk])
           reqWrapper.push(chunk)
           reqWrapper.push(null)
           if (!res.finished) {
             return handler(reqWrapper, resWrapper)
           }
           return
+        } else {
+          if (buffer) buffer = Buffer.concat([buffer, chunk])
+          else buffer = Buffer.concat([chunk])
         }
-
-        return reqWrapper.push(chunk)
       })
     } else if (!res.finished) {
       handler(reqWrapper, resWrapper)
@@ -112,7 +116,7 @@ class HttpRequest extends Readable {
   }
 
   _read (size) {
-    return this.slice(0, size)
+    return this.slice ? this.slice(0, size) : size
   }
 }
 
