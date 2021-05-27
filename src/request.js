@@ -33,7 +33,7 @@ class HttpRequest extends Readable {
   }
 
   _read (size) {
-    return this.slice(0, size)
+    return this.slice ? this.slice(0, size) : size
   }
 }
 
