@@ -18,6 +18,9 @@
     "server",
     "uwebsockets"
   ],
+  "engines": {
+    "node": ">=14.x"
+  },
   "author": "Rolando Santamaria Maso <kyberneees@gmail.com>",
   "contributors": [
     {
