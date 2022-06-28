@@ -67,6 +67,8 @@ class HttpResponse extends Writable {
 
   write (data) {
     if (this.finished) return
+    this.writeAllHeaders()
+    this.headersSent = true
 
     this.res.write(data)
   }
@@ -95,7 +97,9 @@ class HttpResponse extends Writable {
     function doWrite (res) {
       res.res.writeStatus(`${res.statusCode} ${res.statusMessage}`)
 
-      res.writeAllHeaders()
+      if(!res.headersSent){
+        res.writeAllHeaders()
+      }
 
       res.finished = true
       res.res.end(data)
