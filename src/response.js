@@ -95,7 +95,7 @@ class HttpResponse extends Writable {
 
     function doWrite (res) {
       res.res.writeStatus(`${res.statusCode} ${res.statusMessage}`)
-
+      
       res.writeAllHeaders()
 
       res.finished = true
