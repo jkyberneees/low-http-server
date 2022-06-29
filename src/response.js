@@ -67,6 +67,7 @@ class HttpResponse extends Writable {
 
   write (data) {
     if (this.finished) return
+    this.writeAllHeaders()
 
     this.res.write(data)
   }
