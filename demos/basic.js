@@ -2,7 +2,8 @@ const cero = require('./../src/server')
 
 const server = cero({})
 server.on('request', (req, res) => {
-  res.end('Hello World!')
+  res.write('Hello World!')
+  res.end()
 })
 
 server.listen(3000, () => {
