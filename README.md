@@ -97,16 +97,16 @@ No problems, if `prioRequestsProcessing` is set to false.
 const server = require('low-http-server')({})
 
 const service = require('restana')({
-	server: server,
-	prioRequestsProcessing: false // without this the performance will suffer
+  server: server,
+  prioRequestsProcessing: false // NOTE: required for restana integration
 })
 
 server.listen(3000, () => {
-	console.log('Server listening on http://0.0.0.0:3000')
+  console.log('Server listening on http://0.0.0.0:3000')
 })
 
 service.get('/', (req,res) => {
-	res.send('It works!')
+  res.send('It works!')
 })
 ```
 
