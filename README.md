@@ -120,21 +120,21 @@ Generally, appears to have good support, but there may be some small quirks. Tes
 const server = require('./src/server.js')({})
 
 const serverFactory = (handler, opts) => {
-	server.on('request', handler)
-	return server
+  server.on('request', handler)
+  return server
 }
 
 const fastify = require("fastify");
 const app = fastify({
-	serverFactory
+  serverFactory
 });
 
 app.get('/', (req, reply) => {
-	reply.send('hello')
+  reply.send('hello')
 })
 
 app.listen(3000, '0.0.0.0', (sock) => { // Note: you cannot do server.listen, as Fastify apparently needs to set some things
-	if (sock) console.log('listening')
+  if (sock) console.log('listening')
 }) 
 ```
 
