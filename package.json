@@ -1,6 +1,6 @@
 {
   "name": "low-http-server",
-  "version": "4.1.0",
+  "version": "4.2.0",
   "description": "HTTP Server implementation on top of uWebSocket.js",
   "main": "src/server.js",
   "scripts": {
@@ -19,7 +19,7 @@
     "uwebsockets"
   ],
   "engines": {
-    "node": ">=14.x"
+    "node": ">14.x"
   },
   "author": "Rolando Santamaria Maso <kyberneees@gmail.com>",
   "contributors": [
@@ -35,7 +35,7 @@
   },
   "homepage": "https://github.com/jkyberneees/low-http-server#readme",
   "dependencies": {
-    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.10.0"
+    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.16.0"
   },
   "files": [
     "LICENSE",
