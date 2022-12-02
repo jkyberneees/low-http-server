@@ -97,16 +97,16 @@ No problems, if `prioRequestsProcessing` is set to false.
 const server = require('low-http-server')({})
 
 const service = require('restana')({
-	server: server,
-	prioRequestsProcessing: false // without this the performance will suffer
+  server: server,
+  prioRequestsProcessing: false // NOTE: required for restana integration
 })
 
 server.listen(3000, () => {
-	console.log('Server listening on http://0.0.0.0:3000')
+  console.log('Server listening on http://0.0.0.0:3000')
 })
 
 service.get('/', (req,res) => {
-	res.send('It works!')
+  res.send('It works!')
 })
 ```
 
@@ -120,21 +120,21 @@ Generally, appears to have good support, but there may be some small quirks. Tes
 const server = require('./src/server.js')({})
 
 const serverFactory = (handler, opts) => {
-	server.on('request', handler)
-	return server
+  server.on('request', handler)
+  return server
 }
 
 const fastify = require("fastify");
 const app = fastify({
-	serverFactory
+  serverFactory
 });
 
 app.get('/', (req, reply) => {
-	reply.send('hello')
+  reply.send('hello')
 })
 
 app.listen(3000, '0.0.0.0', (sock) => { // Note: you cannot do server.listen, as Fastify apparently needs to set some things
-	if (sock) console.log('listening')
+  if (sock) console.log('listening')
 }) 
 ```
 
