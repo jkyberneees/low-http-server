@@ -51,8 +51,8 @@ module.exports = (config = {}) => {
     }
   })
 
-  uServer._date = new Date().toUTCString()
-  const timer = setInterval(() => (uServer._date = new Date().toUTCString()), 1000)
+  // uServer._date = new Date().toUTCString()
+  // const timer = setInterval(() => (uServer._date = new Date().toUTCString()), 1000)
 
   class Facade extends EventEmitter {
     constructor () {
