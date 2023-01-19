@@ -30,7 +30,7 @@ class HttpResponse extends Writable {
   writeAllHeaders () {
     if (this.headersSent) return
 
-    this.res.writeHeader('Date', this.server._date)
+    // this.res.writeHeader('Date', this.server._date)
 
     Object.keys(this.__headers).forEach(key => {
       if (key.toLowerCase() === 'content-length') return
