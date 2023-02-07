@@ -1,13 +1,29 @@
 const { Writable } = require('stream')
 const { toLowerCase } = require('./utils/string')
 const HttpResponseSocket = require('./responseSocket')
+const CLOSE_EVENT = 'close'
+let closeHandler = ()=>{}
 
 class HttpResponse extends Writable {
-  constructor (uResponse, uServer) {
+  constructor (uResponse) {
     super()
 
+    const oldThisOn = this.on.bind(this)
+    const oldThisOnce = this.once.bind(this)
+
+    this.once = function (eventName, listener) {
+      return oldThisOnce(eventName, listener)
+    }
+
+    this.on = function (eventName, listener) {
+      if (eventName === CLOSE_EVENT) {
+        closeHandler = listener
+        return
+      }
+      return oldThisOn(eventName, listener)
+    }
+
     this.res = uResponse
-    this.server = uServer
 
     this.statusCode = 200
     this.statusMessage = 'OK'
@@ -19,6 +35,7 @@ class HttpResponse extends Writable {
 
     this.res.onAborted(() => {
       this.finished = this.res.finished = true
+      closeHandler()
     })
 
     this.on('pipe', (_) => {
@@ -29,8 +46,6 @@ class HttpResponse extends Writable {
 
   writeAllHeaders () {
     if (this.headersSent) return
-
-    // this.res.writeHeader('Date', this.server._date)
 
     Object.keys(this.__headers).forEach(key => {
       if (key.toLowerCase() === 'content-length') return
