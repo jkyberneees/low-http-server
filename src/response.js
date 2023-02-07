@@ -5,7 +5,7 @@ const CLOSE_EVENT = 'close'
 let closeHandler = ()=>{}
 
 class HttpResponse extends Writable {
-  constructor (uResponse) {
+  constructor (uResponse, reqWrapper) {
     super()
 
     const oldThisOn = this.on.bind(this)
@@ -36,6 +36,7 @@ class HttpResponse extends Writable {
     this.res.onAborted(() => {
       this.finished = this.res.finished = true
       closeHandler()
+      reqWrapper.closeHandler()
     })
 
     this.on('pipe', (_) => {

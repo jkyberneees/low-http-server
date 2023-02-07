@@ -1,11 +1,12 @@
 const { Readable } = require('stream')
 const { forEach } = require('./utils/object')
 const CLOSE_EVENT = 'close'
-let closeHandler = ()=>{}
 
 class HttpRequest extends Readable {
-  constructor (uRequest, uResponse) {
+  constructor (uRequest) {
     super()
+
+    var self = this
 
     const oldThisOn = this.on.bind(this)
     const oldThisOnce = this.once.bind(this)
@@ -14,9 +15,11 @@ class HttpRequest extends Readable {
       return oldThisOnce(eventName, listener)
     }
 
+    this.closeHandler = () => {}
+
     this.on = function (eventName, listener) {
       if (eventName === CLOSE_EVENT) {
-        closeHandler = listener
+        self.closeHandler = listener
         return
       }
       return oldThisOn(eventName, listener)
@@ -34,10 +37,6 @@ class HttpRequest extends Readable {
 
     uRequest.forEach((header, value) => {
       this.headers[header] = value
-    })
-
-    uResponse.onAborted(() => {
-      closeHandler()
     })
   }
 

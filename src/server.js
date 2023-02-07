@@ -23,8 +23,8 @@ module.exports = (config = {}) => {
   const uServer = uWS[appType](config).any('/*', (res, req) => {
     res.finished = false
 
-    const reqWrapper = new HttpRequest(req, res)
-    const resWrapper = new HttpResponse(res)
+    const reqWrapper = new HttpRequest(req)
+    const resWrapper = new HttpResponse(res, reqWrapper)
 
     reqWrapper.res = resWrapper
     resWrapper.req = reqWrapper
