@@ -2,11 +2,12 @@ const { Writable } = require('stream')
 const { toLowerCase } = require('./utils/string')
 const HttpResponseSocket = require('./responseSocket')
 const CLOSE_EVENT = 'close'
-let closeHandler = ()=>{}
 
 class HttpResponse extends Writable {
   constructor (uResponse, reqWrapper) {
     super()
+
+    var self = this
 
     const oldThisOn = this.on.bind(this)
     const oldThisOnce = this.once.bind(this)
@@ -15,9 +16,11 @@ class HttpResponse extends Writable {
       return oldThisOnce(eventName, listener)
     }
 
+    this.closeHandler = () => {}
+
     this.on = function (eventName, listener) {
       if (eventName === CLOSE_EVENT) {
-        closeHandler = listener
+        self.closeHandler = listener
         return
       }
       return oldThisOn(eventName, listener)
@@ -35,7 +38,7 @@ class HttpResponse extends Writable {
 
     this.res.onAborted(() => {
       this.finished = this.res.finished = true
-      closeHandler()
+      self.closeHandler()
       reqWrapper.closeHandler()
     })
 
