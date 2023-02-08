@@ -7,20 +7,22 @@ class HttpResponse extends Writable {
   constructor (uResponse, reqWrapper) {
     super()
 
-    var self = this
-
     const oldThisOn = this.on.bind(this)
     const oldThisOnce = this.once.bind(this)
 
-    this.once = function (eventName, listener) {
+    this.closeHandler = []
+
+    this.once = (eventName, listener)=>{
+      if (eventName === CLOSE_EVENT) {
+        this.closeHandler.push(listener)
+        return
+      }
       return oldThisOnce(eventName, listener)
     }
 
-    this.closeHandler = () => {}
-
-    this.on = function (eventName, listener) {
+    this.on =  (eventName, listener)=>{
       if (eventName === CLOSE_EVENT) {
-        self.closeHandler = listener
+        this.closeHandler.push(listener)
         return
       }
       return oldThisOn(eventName, listener)
@@ -38,8 +40,12 @@ class HttpResponse extends Writable {
 
     this.res.onAborted(() => {
       this.finished = this.res.finished = true
-      self.closeHandler()
-      reqWrapper.closeHandler()
+      this.closeHandler.forEach((handler)=>{
+        handler()
+      })
+      reqWrapper.closeHandler.forEach((handler)=>{
+        handler()
+      })
     })
 
     this.on('pipe', (_) => {

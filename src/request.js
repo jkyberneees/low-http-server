@@ -6,20 +6,22 @@ class HttpRequest extends Readable {
   constructor (uRequest) {
     super()
 
-    var self = this
-
     const oldThisOn = this.on.bind(this)
     const oldThisOnce = this.once.bind(this)
 
-    this.once = function (eventName, listener) {
+    this.closeHandler = []
+
+    this.once = (eventName, listener)=>{
+      if (eventName === CLOSE_EVENT) {
+        this.closeHandler.push(listener)
+        return
+      }
       return oldThisOnce(eventName, listener)
     }
 
-    this.closeHandler = () => {}
-
-    this.on = function (eventName, listener) {
+    this.on =  (eventName, listener)=>{
       if (eventName === CLOSE_EVENT) {
-        self.closeHandler = listener
+        this.closeHandler.push(listener)
         return
       }
       return oldThisOn(eventName, listener)
