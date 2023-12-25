@@ -114,29 +114,7 @@ service.get('/', (req,res) => {
 
 ### Fastify
 
-Generally, appears to have good support, but there may be some small quirks. Test well before putting into production.
-
-```js
-const server = require('./src/server.js')({})
-
-const serverFactory = (handler, opts) => {
-  server.on('request', handler)
-  return server
-}
-
-const fastify = require("fastify");
-const app = fastify({
-  serverFactory
-});
-
-app.get('/', (req, reply) => {
-  reply.send('hello')
-})
-
-app.listen(3000, '0.0.0.0', (sock) => { // Note: you cannot do server.listen, as Fastify apparently needs to set some things
-  if (sock) console.log('listening')
-}) 
-```
+- Broken in current release.
 
 
 
